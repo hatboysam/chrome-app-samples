@@ -55,6 +55,10 @@
 
     var details = {};
     details.interactive = params.immediate === false || false;
+    if (params.accountHint) {
+      // Specifying this prevents the account chooser from appearing on Android.
+      details.accountHint = params.accountHint;
+    }
     console.assert(!params.response_type || params.response_type == 'token');
 
     var callbackWrapper = function (getAuthTokenCallbackParam) {
@@ -119,9 +123,13 @@
         }
       };
 
-      var jsonResp = JSON.parse(this.response);
       var rawResp = JSON.stringify(rawResponseObject);
-      args.callback(jsonResp, rawResp);
+      if (this.response) {
+        var jsonResp = JSON.parse(this.response);
+        args.callback(jsonResp, rawResp);
+      } else {
+        args.callback(null, rawResp);
+      }
     };
   };
 
